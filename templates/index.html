@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Jet</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <div id="login-screen" class="login-screen">
+        <div class="login-content">
+            <div class="logo">🚀</div>
+            <h1 class="app-title">Lucky Jet</h1>
+            <p class="app-subtitle">Открывай кейсы и выигрывай</p>
+            <button id="telegram-login-btn" class="login-button">
+                <i class="fab fa-telegram"></i> Войти через Telegram
+            </button>
+        </div>
+    </div>
+
+    <div id="main-app" class="hidden app-container">
+        <div class="app-header">
+            <div class="balance-display">
+                <img src="https://ton.org/download/ton_symbol.png" alt="TON" class="balance-icon">
+                <span class="balance-amount"><span id="balance">0</span></span>
+                <button class="refresh-btn" id="refresh-balance" title="Обновить баланс">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+            <div class="header-right">
+                <div class="online-indicator">
+                    <span class="online-dot"></span>
+                    <span id="online-count">0</span> онлайн
+                </div>
+                <div class="user-level">
+                    <i class="fas fa-star"></i>
+                    <span id="user-level-name">Новичок</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-switcher">
+            <button class="tab-button active" data-tab="cases">
+                <i class="fas fa-box"></i> Cases
+            </button>
+            <button class="tab-button" data-tab="crash">
+                <i class="fas fa-rocket"></i> Crash
+            </button>
+        </div>
+
+        <div id="cases-tab">
+            <div class="cases-grid">
+                <div class="case-card" data-case="starter" data-price="0.1">
+                    <div class="case-image-wrapper">
+                        <img alt="Starter Case" class="case-image" />
+                        <img alt="Starter Case GIF" class="case-gif" style="display: none;" />
+                        <div class="case-icon-wrapper">📦</div>
+                    </div>
+                    <div class="case-name">Starter</div>
+                    <div class="case-price">
+                        <img src="https://ton.org/download/ton_symbol.png" alt="TON" class="ton-icon-small">
+                        <span>0.1</span>
+                    </div>
+                </div>
+
+                <div class="case-card" data-case="premium" data-price="0.5">
+                    <div class="case-image-wrapper">
+                        <img alt="Premium Case" class="case-image" />
+                        <img alt="Premium Case GIF" class="case-gif" style="display: none;" />
+                        <div class="case-icon-wrapper">🎁</div>
+                    </div>
+                    <div class="case-name">Premium</div>
+                    <div class="case-price">
+                        <img src="https://ton.org/download/ton_symbol.png" alt="TON" class="ton-icon-small">
+                        <span>0.5</span>
+                    </div>
+                </div>
+
+                <div class="case-card" data-case="gold" data-price="1">
+                    <div class="case-image-wrapper">
+                        <img alt="Gold Case" class="case-image" />
+                        <img alt="Gold Case GIF" class="case-gif" style="display: none;" />
+                        <div class="case-icon-wrapper">💎</div>
+                    </div>
+                    <div class="case-name">Gold</div>
+                    <div class="case-price">
+                        <img src="https://ton.org/download/ton_symbol.png" alt="TON" class="ton-icon-small">
+                        <span>1</span>
+                    </div>
+                </div>
+
+                <div class="case-card" data-case="jackpot" data-price="2">
+                    <div class="case-image-wrapper">
+                        <img alt="Jackpot Case" class="case-image" />
+                        <img alt="Jackpot Case GIF" class="case-gif" style="display: none;" />
+                        <div class="case-icon-wrapper">🏆</div>
+                    </div>
+                    <div class="case-name">Jackpot</div>
+                    <div class="case-price">
+                        <img src="https://ton.org/download/ton_symbol.png" alt="TON" class="ton-icon-small">
+                        <span>2</span>
+                    </div>
+                </div>
+
+                <div class="case-card" data-case="mega" data-price="5">
+                    <div class="case-image-wrapper">
+                        <img alt="Mega Case" class="case-image" />
+                        <img alt="Mega Case GIF" class="case-gif" style="display: none;" />
+                        <div class="case-icon-wrapper">⭐</div>
+                    </div>
+                    <div class="case-name">Mega</div>
+                    <div class="case-price">
+                        <img src="https://ton.org/download/ton_symbol.png" alt="TON" class="ton-icon-small">
+                        <span>5</span>
+                    </div>
+                </div>
+
+                <div class="case-card" data-case="ultimate" data-price="10">
+                    <div class="case-image-wrapper">
+                        <img alt="Ultimate Case" class="case-image" />
+                        <img alt="Ultimate Case GIF" class="case-gif" style="display: none;" />
+                        <div class="case-icon-wrapper">👑</div>
+                    </div>
+                    <div class="case-name">Ultimate</div>
+                    <div class="case-price">
+                        <img src="https://ton.org/download/ton_symbol.png" alt="TON" class="ton-icon-small">
+                        <span>10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="crash-tab" class="hidden">
+            <div class="game-container">
+                <div class="game-card">
+                    <div class="game-info">
+                        <div class="game-status-group">
+                            <span class="game-status">
+                                <span class="status-dot"></span>
+                                <span id="game-status-text">Ожидание</span>
+                            </span>
+                            <span class="timer" id="countdown-timer">15s</span>
+                        </div>
+                        <div class="players-list" id="players-list">
+                            <div class="players-count">
+                                <i class="fas fa-users"></i>
+                                <span id="players-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="active-bets-container" id="active-bets-container">
+                        <div class="active-bets-title">Активные ставки:</div>
+                        <div class="active-bets-list" id="active-bets-list"></div>
+                    </div>
+
+                    <div class="chart-area">
+                        <div class="multiplier-big" id="current-multiplier">1.00x</div>
+                        <svg class="chart-svg" id="luckyjet-arrow" viewBox="0 0 750 341">
+                            <defs>
+                                <linearGradient id="grad" x1="0" x2="1" y1="0" y2="1">
+                                    <stop stop-color="#6366f1" stop-opacity=".3"/>
+                                    <stop offset="1" stop-color="#8b5cf6" stop-opacity="0"/>
+                                </linearGradient>
+                                <linearGradient id="grad_stroke" x1="0" x2="1" y1="0" y2="1">
+                                    <stop stop-color="#6366f1"/>
+                                    <stop offset=".787" stop-color="#8b5cf6"/>
+                                </linearGradient>
+                            </defs>
+                            <g>
+                                <path id="arrow-line"
+                                      d="M 0 341 Q 150 341 200 300"
+                                      fill="transparent"
+                                      stroke="url(#grad_stroke)"
+                                      stroke-width="3"
+                                      stroke-linecap="round"/>
+                                <path id="arrow-fill"
+                                      d="M 0 341 Q 150 341 200 300 L 200 341 Z"
+                                      fill="url(#grad)"/>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <div class="quick-bets">
+                        <button class="quick-bet-btn" data-amount="50">50</button>
+                        <button class="quick-bet-btn" data-amount="100">100</button>
+                        <button class="quick-bet-btn" data-amount="500">500</button>
+                        <button class="quick-bet-btn" data-amount="1000">1K</button>
+                    </div>
+
+                    <div class="game-controls">
+                        <div class="input-wrapper">
+                            <label class="input-label">Ставка (TON)</label>
+                            <input type="number" id="bet-amount" class="game-input" placeholder="50" min="50" value="50">
+                            <label class="input-label">Авто выход</label>
+                            <input type="number" id="auto-cashout" class="game-input" placeholder="2.0x" step="0.1">
+                        </div>
+                        <div class="button-wrapper">
+                            <button id="place-bet" class="game-button btn-bet">
+                                <i class="fas fa-play"></i> Ставка
+                            </button>
+                            <button id="cashout" class="game-button btn-cashout" disabled>
+                                <i class="fas fa-hand-holding-usd"></i> Забрать
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="history-section">
+                    <div class="history-title"><i class="fas fa-history"></i> История игр</div>
+                    <div class="history-scroll" id="history-list">
+                        <div class="loader">
+                            <div class="spinner"></div>
+                            <div>Загрузка...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="profile-tab" class="hidden">
+            <div class="profile-container">
+                <div class="profile-card">
+                    <div class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="profile-details">
+                        <div class="profile-name" id="profile-name">Игрок</div>
+                        <div class="profile-id" id="profile-id">ID: ---</div>
+                    </div>
+                </div>
+
+                <div class="stats-container">
+                    <div class="stat-box">
+                        <div class="stat-number" id="total-games">0</div>
+                        <div class="stat-label">Игры</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="total-wins">0</div>
+                        <div class="stat-label">Победы</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number" id="best-multiplier">1.0x</div>
+                        <div class="stat-label">Макс</div>
+                    </div>
+                </div>
+
+                <div class="wallet-card">
+                    <div class="wallet-header"><i class="fas fa-wallet"></i> TON Кошелек</div>
+                    <div class="wallet-address-text" id="wallet-status-text">Не подключен</div>
+                    <div id="ton-connect-button"></div>
+                </div>
+
+                <button id="logout-btn" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i> Выйти
+                </button>
+            </div>
+        </div>
+
+        <div class="bottom-navigation">
+            <button class="nav-btn active" data-nav="cases">
+                <i class="nav-icon fas fa-box"></i>
+                <div class="nav-text">Cases</div>
+            </button>
+            <button class="nav-btn" data-nav="crash">
+                <i class="nav-icon fas fa-rocket"></i>
+                <div class="nav-text">Crash</div>
+            </button>
+            <button class="nav-btn" data-nav="inventory">
+                <i class="nav-icon fas fa-backpack"></i>
+                <div class="nav-text">Inventory</div>
+            </button>
+            <button class="nav-btn" data-nav="profile">
+                <i class="nav-icon fas fa-user"></i>
+                <div class="nav-text">Profile</div>
+            </button>
+        </div>
+
+        <div id="inventory-tab" class="hidden">
+            <div class="profile-container">
+                <div class="inventory-header">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 16px;">
+                        <i class="fas fa-backpack"></i> Инвентарь
+                    </h2>
+                    <button id="sell-all-btn" class="btn-sell-all">
+                        <i class="fas fa-money-bill-wave"></i> Продать всё
+                    </button>
+                </div>
+
+                <div id="inventory-grid" class="inventory-grid">
+                    <div class="loader">
+                        <div class="spinner"></div>
+                        <div>Загрузка...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="case-modal" class="case-modal hidden">
+        <div class="case-modal-content">
+            <div class="case-modal-header">
+                <div class="case-modal-title" id="modal-case-name">Premium Case</div>
+                <button class="modal-close-btn" id="modal-close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="case-info">
+                <div class="case-price-info">
+                    <div style="margin-bottom: 4px;">Стоимость:</div>
+                    <div class="case-price-value">
+                        <img src="https://ton.org/download/ton_symbol.png" alt="TON" class="ton-icon-small">
+                        <span id="modal-case-price">0.5</span>
+                    </div>
+                </div>
+                <div class="case-price-info">
+                    <div style="margin-bottom: 4px;">Ваш баланс:</div>
+                    <div class="case-price-value">
+                        <img src="https://ton.org/download/ton_symbol.png" alt="TON" class="ton-icon-small">
+                        <span id="modal-user-balance">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="spinning-reel-container horizontal">
+                <div class="reel-indicator-horizontal"></div>
+                <div class="spinning-reel-horizontal" id="spinning-reel"></div>
+            </div>
+
+            <div class="spin-controls">
+                <button class="btn-spin" id="btn-spin">
+                    <i class="fas fa-play"></i> Открыть кейс
+                </button>
+                <button class="btn-cancel" id="btn-cancel-spin">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="case-items-preview">
+                <div class="case-items-title">
+                    <i class="fas fa-list"></i> Возможные выпадения:
+                </div>
+                <div class="case-items-grid" id="case-items-grid">
+                    <div class="loader-small">
+                        <div class="spinner-small"></div>
+                        <div>Загрузка...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-modal" class="result-modal hidden">
+        <div class="result-modal-content">
+            <div class="result-icon" id="result-icon">🎁</div>
+            <div class="result-title">Поздравляем!</div>
+            <div class="result-item-name" id="result-item-name">Diamond</div>
+            <div class="result-prize profit" id="result-prize-container">
+                <img src="https://ton.org/download/ton_symbol.png" alt="TON" class="ton-icon-medium">
+                <span id="result-prize-amount">+0.5</span>
+            </div>
+            <div class="result-balance">
+                Новый баланс: <img src="https://ton.org/download/ton_symbol.png" alt="TON" class="ton-icon-small"> <span class="result-balance-value" id="result-new-balance">0</span>
+            </div>
+            <button class="btn-result-close" id="btn-result-close">
+                <i class="fas fa-check"></i> Отлично!
+            </button>
+        </div>
+    </div>
+
+    <div id="item-view-modal" class="result-modal hidden">
+        <div class="result-modal-content">
+            <div class="item-view-header">
+                <div class="item-view-title" id="item-view-name">Item</div>
+                <button class="modal-close-btn" id="item-view-close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="item-view-icon" id="item-view-icon"></div>
+            <div class="item-view-value" id="item-view-value">0 TON</div>
+            <button class="btn-result-close" id="item-view-close">
+                <i class="fas fa-check"></i> Закрыть
+            </button>
+        </div>
+    </div>
+
+    <script src="../static/script.js"></script>
+</body>
+</html>
